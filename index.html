@@ -1,0 +1,819 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#f2f4f8" />
+    <title>Forma Studio — Architecture in Winter Air</title>
+    <meta
+      name="description"
+      content="Forma Studio is an architectural visualisation practice working in imagery, film and interactive space. A winter pavilion, studied in five views."
+    />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preload" href="/fonts/fraunces-variable.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/fraunces-variable-italic.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/models/forma-pagoda.glb" as="fetch" crossorigin />
+    <script>document.documentElement.classList.add('js');</script>
+    <script>
+      (function () {
+        var t = 'light';
+        try { if (localStorage.getItem('forma-theme') === 'dark') t = 'dark'; } catch (e) {}
+        document.documentElement.dataset.theme = t;
+        var m = document.querySelector('meta[name="theme-color"]');
+        if (m) m.setAttribute('content', t === 'dark' ? '#060b14' : '#f2f4f8');
+      })();
+    </script>
+    <script type="module" src="/src/main.js"></script>
+  </head>
+  <body class="is-loading">
+    <a class="skip-link" href="#main">Skip to the study</a>
+
+    <!-- ── loading ───────────────────────────────────────────── -->
+    <div class="loader" id="loader" role="status" aria-live="polite" aria-label="Preparing the winter study">
+      <div class="loader__inner">
+        <div class="loader__meta mono">
+          <span>Forma Studio</span>
+          <span class="loader__pct"><span id="loader-pct">00</span>%</span>
+        </div>
+        <svg class="loader__draw" viewBox="0 0 420 150" fill="none" aria-hidden="true">
+          <g class="loader__draw__lines" stroke="currentColor" stroke-width="1">
+            <path d="M20 124 H400" />
+            <path d="M52 124 V52 L210 20 L368 52 V124" />
+            <path d="M52 52 H368" />
+            <path d="M92 124 V74 H152 V124" />
+            <path d="M270 124 V74 H330 V124" />
+            <path d="M152 74 H270" />
+            <path d="M210 20 V6" />
+            <path d="M52 124 V138 M368 124 V138 M20 124 V138 M400 124 V138" />
+          </g>
+          <circle cx="210" cy="6" r="2.4" fill="currentColor" />
+        </svg>
+        <p class="loader__note mono" id="loader-note">Preparing winter light …</p>
+      </div>
+    </div>
+
+    <!-- ── cursor ────────────────────────────────────────────── -->
+    <div class="cursor" id="cursor" aria-hidden="true">
+      <span class="cursor__ring"></span>
+      <span class="cursor__tick cursor__tick--t"></span>
+      <span class="cursor__tick cursor__tick--b"></span>
+      <span class="cursor__tick cursor__tick--l"></span>
+      <span class="cursor__tick cursor__tick--r"></span>
+      <span class="cursor__dot"></span>
+      <span class="cursor__label" id="cursor-label"></span>
+    </div>
+
+    <!-- ── header ────────────────────────────────────────────── -->
+    <header class="site-header">
+      <a class="wordmark" href="#top" aria-label="Forma Studio, back to the pavilion">
+        <svg class="wordmark__mark" viewBox="0 0 34 34" aria-hidden="true">
+          <path d="M5 29V5h24" />
+          <path d="M5 29 29 5" />
+          <path d="M5 17h17v12" />
+          <circle cx="24.5" cy="9.5" r="1.8" />
+        </svg>
+        <span class="wordmark__type">
+          <span class="wordmark__name">Forma</span>
+          <span class="wordmark__sub">Studio</span>
+        </span>
+      </a>
+
+      <nav class="site-nav" aria-label="Primary">
+        <a href="#atmosphere" data-nav>
+          <span class="site-nav__idx">01</span>
+          <span class="site-nav__word" data-alt="Atmosphere"><span>Atmosphere</span></span>
+        </a>
+        <a href="#design" data-nav>
+          <span class="site-nav__idx">02</span>
+          <span class="site-nav__word" data-alt="Inside"><span>Inside</span></span>
+        </a>
+        <a href="#services" data-nav>
+          <span class="site-nav__idx">03</span>
+          <span class="site-nav__word" data-alt="Services"><span>Services</span></span>
+        </a>
+        <a href="#contact" data-nav>
+          <span class="site-nav__idx">04</span>
+          <span class="site-nav__word" data-alt="Contact"><span>Contact</span></span>
+        </a>
+      </nav>
+
+      <div class="header-controls">
+        <button
+          class="theme-toggle"
+          id="theme-toggle"
+          type="button"
+          aria-label="Switch to the dark theme"
+          data-label-dark="Switch to the light theme"
+        >
+          <span class="theme-toggle__icon theme-toggle__icon--moon" aria-hidden="true">
+            <svg viewBox="0 0 18 18" width="13" height="13"><path d="M14.7 11.2A6.4 6.4 0 0 1 6.8 3.3 6.4 6.4 0 1 0 14.7 11.2Z" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
+          </span>
+          <span class="theme-toggle__icon theme-toggle__icon--sun" aria-hidden="true">
+            <svg viewBox="0 0 18 18" width="13" height="13"><circle cx="9" cy="9" r="3.4" fill="none" stroke="currentColor" stroke-width="1.2"/><g stroke="currentColor" stroke-width="1.1"><path d="M9 1v2.1M9 14.9V17M1 9h2.1M14.9 9H17M3.5 3.5l1.5 1.5M13 13l1.5 1.5M14.5 3.5 13 5M5 13l-1.5 1.5"/></g></svg>
+          </span>
+        </button>
+        <button
+          class="sound-toggle"
+          id="sound-toggle"
+          type="button"
+          aria-pressed="false"
+          aria-label="Enable ambient sound"
+        >
+          <span class="sound-toggle__bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+          <span class="sound-toggle__text mono" id="sound-toggle-text">Sound off</span>
+        </button>
+        <button
+          class="menu-toggle"
+          id="menu-toggle"
+          type="button"
+          aria-expanded="false"
+          aria-controls="mobile-nav"
+          aria-label="Open menu"
+        >
+          <span></span><span></span>
+        </button>
+      </div>
+    </header>
+
+    <nav class="mobile-nav" id="mobile-nav" aria-label="Sections" hidden>
+      <div class="mobile-nav__inner">
+        <p class="mobile-nav__eyebrow mono">Forma Studio — index</p>
+        <a href="#atmosphere" data-nav><span class="mono">01</span>Atmosphere</a>
+        <a href="#design" data-nav><span class="mono">02</span>Inside the design</a>
+        <a href="#services" data-nav><span class="mono">03</span>Services</a>
+        <a href="#process" data-nav><span class="mono">04</span>Method</a>
+        <a href="#press" data-nav><span class="mono">05</span>Recognition</a>
+        <a href="#faq" data-nav><span class="mono">06</span>Questions</a>
+        <a href="#contact" data-nav><span class="mono">07</span>Contact</a>
+        <p class="mobile-nav__foot mono">Pavilion study — Winter 2026</p>
+      </div>
+    </nav>
+
+    <main id="main">
+      <!-- ══════════════════════════════════════════════════════
+           HERO — pavilion, five camera stages
+           ══════════════════════════════════════════════════════ -->
+      <section class="hero" id="hero" aria-label="Forma Pavilion — five architectural views">
+        <div class="hero__canvas-holder" id="hero-canvas-holder">
+          <canvas
+            id="scene"
+            aria-label="Interactive winter scene of a five-tier pavilion standing at the waterline. Hover the architecture to inspect it."
+          ></canvas>
+        </div>
+        <div class="hero__veil" aria-hidden="true"></div>
+
+        <div class="hero__rules" aria-hidden="true">
+          <span class="rule rule--v rule--l"></span>
+          <span class="rule rule--v rule--r"></span>
+          <span class="rule rule--h rule--t"></span>
+          <span class="rule rule--h rule--b"></span>
+        </div>
+
+        <div class="hero__guides-overlay" id="guides-overlay" aria-hidden="true"></div>
+
+        <!-- stage copy -->
+        <div class="stage-copy is-in" id="stage-copy">
+          <p class="stage-copy__eyebrow mono">
+            <span id="stage-num">01</span> / 05 <span class="stage-copy__dash">—</span>
+            <span id="stage-name">Three-quarter approach</span>
+          </p>
+
+          <h1 class="stage-copy__title" id="stage-title" data-scan>
+            <span class="stage-copy__title-inner">
+              <span class="line"><span class="line__in">A pavilion held</span></span>
+              <span class="line"><span class="line__in">in <em>winter</em> air.</span></span>
+            </span>
+            <span class="scan" aria-hidden="true"></span>
+          </h1>
+
+          <p class="stage-copy__body" id="stage-body">
+            Five tiers of timber and snow, standing at the waterline where the river gives the
+            architecture back to itself.
+          </p>
+
+          <p class="stage-copy__foot mono">
+            <span id="stage-alt">EL 6.4°</span>
+            <span class="dot-sep" aria-hidden="true"></span>
+            <span id="stage-dist">DIST 26 m</span>
+            <span class="dot-sep" aria-hidden="true"></span>
+            <span>Scroll to set a view</span>
+          </p>
+          <span class="sr-only" id="stage-announce" aria-live="polite"></span>
+        </div>
+
+        <!-- five views -->
+        <aside class="views" aria-label="Camera views">
+          <div class="views__head">
+            <span class="mono">Views</span>
+            <span class="views__count mono"><span id="views-idx">01</span> / 05</span>
+          </div>
+          <ol class="views__list" id="views-list">
+            <li class="is-active">
+              <button type="button" data-stage="0" aria-label="View 1 — three-quarter approach">
+                <span class="views__n mono">01</span>
+                <span class="views__t">Three-quarter approach</span>
+                <span class="views__m" data-live="1">AZ 042° · EL 06°</span>
+              </button>
+            </li>
+            <li>
+              <button type="button" data-stage="1" aria-label="View 2 — low reflection">
+                <span class="views__n mono">02</span>
+                <span class="views__t">Low reflection</span>
+                <span class="views__m">AZ 320° · EL 02°</span>
+              </button>
+            </li>
+            <li>
+              <button type="button" data-stage="2" aria-label="View 3 — diagonal rise">
+                <span class="views__n mono">03</span>
+                <span class="views__t">Diagonal rise</span>
+                <span class="views__m">AZ 118° · EL 24°</span>
+              </button>
+            </li>
+            <li>
+              <button type="button" data-stage="3" aria-label="View 4 — elevated study">
+                <span class="views__n mono">04</span>
+                <span class="views__t">Elevated study</span>
+                <span class="views__m">AZ 034° · EL 56°</span>
+              </button>
+            </li>
+            <li>
+              <button type="button" data-stage="4" aria-label="View 5 — final composition">
+                <span class="views__n mono">05</span>
+                <span class="views__t">Final composition</span>
+                <span class="views__m">AZ 038° · EL 12°</span>
+              </button>
+            </li>
+          </ol>
+        </aside>
+
+        <!-- stage rail -->
+        <ol class="stage-rail" id="stage-rail" aria-label="Stage rail">
+          <li class="is-active"><button type="button" data-stage="0" aria-label="Stage 1"></button></li>
+          <li><button type="button" data-stage="1" aria-label="Stage 2"></button></li>
+          <li><button type="button" data-stage="2" aria-label="Stage 3"></button></li>
+          <li><button type="button" data-stage="3" aria-label="Stage 4"></button></li>
+          <li><button type="button" data-stage="4" aria-label="Stage 5"></button></li>
+        </ol>
+
+        <!-- secondary information -->
+        <div class="hero-info">
+          <button
+            class="inspect-action"
+            id="inspect-action"
+            type="button"
+            aria-pressed="false"
+            aria-label="Explore the structure — reveal architectural guides"
+          >
+            <span class="inspect-action__rule" aria-hidden="true"></span>
+            <span class="inspect-action__label">Explore the Structure</span>
+            <span class="inspect-action__plus" aria-hidden="true">+</span>
+          </button>
+          <div class="label-strip" aria-hidden="true">
+            <div class="label-strip__track" id="label-track"></div>
+          </div>
+          <p class="hero-info__hint mono">Move to inspect · Drag to look</p>
+        </div>
+
+        <div class="hero__scroll-cue" aria-hidden="true">
+          <span class="mono">Enter the study</span>
+          <span class="hero__scroll-line"></span>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════════════════
+           SECTION 01 — From Structure to Atmosphere
+           ══════════════════════════════════════════════════════ -->
+      <section class="atmosphere" id="atmosphere" aria-labelledby="atmosphere-title">
+        <div class="atmosphere__head">
+          <p class="section-eyebrow mono"><span>01</span> Pavilion study — north elevation</p>
+          <span class="atmosphere__rule" aria-hidden="true"></span>
+          <p class="mono">Fig. 01</p>
+        </div>
+
+        <div class="atmosphere__grid">
+          <figure class="atmosphere__art">
+            <div class="art-frame">
+              <div class="art-stack" id="art-stack">
+                <div class="art-layer" data-art-layer="outline" aria-hidden="true"></div>
+                <div class="art-layer" data-art-layer="material" aria-hidden="true"></div>
+                <div class="art-layer" data-art-layer="light" aria-hidden="true"></div>
+                <div class="art-layer" data-art-layer="finish" aria-hidden="true"></div>
+              </div>
+              <div class="art-scan" id="art-scan" aria-hidden="true">
+                <span class="art-scan__line"></span>
+                <span class="art-scan__label mono" id="art-scan-label">STRUCTURE</span>
+              </div>
+              <div class="art-annotations" id="art-annotations" aria-hidden="true"></div>
+              <div class="art-frame__ticks mono" aria-hidden="true">
+                <span>+ 18.0</span><span>+ 12.0</span><span>+ 06.0</span><span>± 00.0</span>
+              </div>
+            </div>
+            <figcaption class="art-caption mono">
+              Forma Pavilion · winter elevation — drawing developed into atmosphere
+            </figcaption>
+          </figure>
+
+          <div class="atmosphere__copy">
+            <h2 class="section-title" id="atmosphere-title" data-scan>
+              <span class="section-title__inner">
+                <span class="line">From structure</span>
+                <span class="line">to <em>atmosphere</em>.</span>
+              </span>
+              <span class="scan" aria-hidden="true"></span>
+            </h2>
+            <p class="section-lede">
+              Every visualization begins as a set of decisions: a span, a joint, a degree of
+              winter light. We keep that logic legible as the image acquires its materials.
+            </p>
+            <p class="section-body">
+              Our studio works between the drawing and the film. We test how a building meets
+              weather, how a surface receives light, and how a room feels when it is almost
+              empty. The result is not a picture of architecture, but an argument for it.
+            </p>
+
+            <div class="services" aria-label="Services">
+              <article class="service" tabindex="0">
+                <span class="service__idx mono" aria-hidden="true">S.01</span>
+                <h3 class="service__name">Architectural Imagery</h3>
+                <p class="service__desc">
+                  Stills and large-format views built from the model outward — structure,
+                  material, weather and the precise hour of light.
+                </p>
+              </article>
+              <article class="service" tabindex="0">
+                <span class="service__idx mono" aria-hidden="true">S.02</span>
+                <h3 class="service__name">Cinematic Films</h3>
+                <p class="service__desc">
+                  Short architectural films with measured camera movement, atmospheric sound and
+                  a calm editorial cut.
+                </p>
+              </article>
+              <article class="service" tabindex="0">
+                <span class="service__idx mono" aria-hidden="true">S.03</span>
+                <h3 class="service__name">Interactive Experiences</h3>
+                <p class="service__desc">
+                  Real-time studies that let clients move through a proposal, inspect its
+                  assemblies and understand how it behaves.
+                </p>
+              </article>
+            </div>
+
+            <p class="atmosphere__meta mono">
+              <span>Concept, drawing, render — one continuous line</span>
+              <span class="dot-sep" aria-hidden="true"></span>
+              <span>Winter 2026</span>
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════════════════
+           SECTION 02 — Inside the Design
+           ══════════════════════════════════════════════════════ -->
+      <section class="design" id="design" aria-labelledby="design-title">
+        <div class="design__track" id="design-track">
+          <div class="design__pin">
+            <div class="design__head">
+              <p class="section-eyebrow mono"><span>02</span> Inside the design — level 02</p>
+              <div class="design__progress" aria-hidden="true">
+                <span id="design-progress-fill"></span>
+              </div>
+              <p class="design__phase mono" id="design-phase">Boundaries</p>
+            </div>
+
+            <div class="design__grid">
+              <div class="design__plan">
+                <figure class="plan-frame">
+                  <div class="plan-caption mono">
+                    <span>Forma Pavilion · conceptual plan</span>
+                    <span>1:100</span>
+                  </div>
+                  <div class="plan-svg" id="plan-svg" role="img" aria-label="Conceptual floor plan of the Forma Pavilion, assembled progressively from boundaries, structure, partitions, openings, furniture and annotations."></div>
+                  <div class="plan-markers" id="plan-markers"></div>
+                </figure>
+                <p class="design__note mono" id="design-note">
+                  Hover the markers to read the notes.
+                </p>
+              </div>
+
+              <div class="design__copy">
+                <h2 class="section-title section-title--sm" id="design-title" data-scan>
+                  <span class="section-title__inner">
+                    <span class="line">Inside the</span>
+                    <span class="line"><em>design</em>.</span>
+                  </span>
+                  <span class="scan" aria-hidden="true"></span>
+                </h2>
+                <p class="section-lede">
+                  A square plan, read from its outer boundary inward. The drawing assembles as
+                  you scroll — first the limits, then the structure that holds them.
+                </p>
+
+                <ol class="process" aria-label="Our process">
+                  <li class="process__item is-active">
+                    <span class="process__idx mono" aria-hidden="true">P.01</span>
+                    <h3 class="process__name">Concept</h3>
+                    <p class="process__text">
+                      We begin with the argument of the building: its centre, its edges, and the
+                      path between them.
+                    </p>
+                  </li>
+                  <li class="process__item">
+                    <span class="process__idx mono" aria-hidden="true">P.02</span>
+                    <h3 class="process__name">Material</h3>
+                    <p class="process__text">
+                      Timber, stone and glass are chosen for how they age in winter, not only for
+                      how they photograph.
+                    </p>
+                  </li>
+                  <li class="process__item">
+                    <span class="process__idx mono" aria-hidden="true">P.03</span>
+                    <h3 class="process__name">Light</h3>
+                    <p class="process__text">
+                      Overcast light is patient. We place the warm interior against it so the
+                      windows read as inhabited.
+                    </p>
+                  </li>
+                  <li class="process__item">
+                    <span class="process__idx mono" aria-hidden="true">P.04</span>
+                    <h3 class="process__name">Experience</h3>
+                    <p class="process__text">
+                      Finally the drawing becomes a place: water moving, snow settling, the camera
+                      allowed to wait.
+                    </p>
+                  </li>
+                </ol>
+
+                <p class="atmosphere__meta mono">
+                  <span>Boundaries → structure → partitions → openings → furniture → annotation</span>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════════════════
+           SECTION 03 — Services
+           ══════════════════════════════════════════════════════ -->
+      <section class="offers" id="services" aria-labelledby="offers-title">
+        <div class="offers__head">
+          <p class="section-eyebrow mono"><span>03</span> Services — what the studio makes</p>
+          <span class="atmosphere__rule" aria-hidden="true"></span>
+          <p class="mono">Fig. 03</p>
+        </div>
+
+        <div class="offers__grid">
+          <div class="offers__copy">
+            <h2 class="section-title" id="offers-title" data-scan>
+              <span class="section-title__inner">
+                <span class="line">Three ways of</span>
+                <span class="line">showing a <em>building</em>.</span>
+              </span>
+              <span class="scan" aria-hidden="true"></span>
+            </h2>
+            <p class="section-lede">
+              Each engagement is one study and one deliverable — we would rather finish a single
+              argument perfectly than spread a budget across everything.
+            </p>
+
+            <dl class="offers__terms mono">
+              <div><dt>Scope</dt><dd>One study, one deliverable</dd></div>
+              <div><dt>Cadence</dt><dd>Weekly review sessions</dd></div>
+              <div><dt>Fees</dt><dd>Quoted per engagement</dd></div>
+            </dl>
+
+            <a class="offers__cta mono" href="#contact" data-nav>
+              <span>Begin an enquiry</span>
+              <span class="offers__cta-arrow" aria-hidden="true">↗</span>
+            </a>
+
+            <p class="atmosphere__meta mono">
+              <span>Packages are assembled with you, not from a template</span>
+            </p>
+          </div>
+
+          <ul class="offers__list" role="list" aria-label="Studio services">
+            <li class="service is-wide" tabindex="0" data-reveal>
+              <span class="service__idx mono" aria-hidden="true">W.01</span>
+              <h3 class="service__name">Architectural Imagery</h3>
+              <p class="service__desc">
+                Stills and large-format views built from the model outward — structure, material,
+                weather and the precise hour of light.
+              </p>
+              <ul class="service__pack mono">
+                <li>Hero stills</li>
+                <li>Elevation studies</li>
+                <li>Winter-light series</li>
+              </ul>
+            </li>
+            <li class="service is-wide" tabindex="0" data-reveal style="--d: 90ms">
+              <span class="service__idx mono" aria-hidden="true">W.02</span>
+              <h3 class="service__name">Cinematic Films</h3>
+              <p class="service__desc">
+                Short architectural films with measured camera movement, atmospheric sound and a
+                calm editorial cut.
+              </p>
+              <ul class="service__pack mono">
+                <li>Two–four minute films</li>
+                <li>Original sound design</li>
+                <li>Stills for the poster frame</li>
+              </ul>
+            </li>
+            <li class="service is-wide" tabindex="0" data-reveal style="--d: 180ms">
+              <span class="service__idx mono" aria-hidden="true">W.03</span>
+              <h3 class="service__name">Interactive Experiences</h3>
+              <p class="service__desc">
+                Real-time studies that let clients move through a proposal, inspect its assemblies
+                and understand how it behaves.
+              </p>
+              <ul class="service__pack mono">
+                <li>Browser-native studies</li>
+                <li>Guided camera stages</li>
+                <li>Texture and material polish</li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════════════════
+           SECTION 04 — Method
+           ══════════════════════════════════════════════════════ -->
+      <section class="method" id="process" aria-labelledby="method-title">
+        <div class="method__head">
+          <p class="section-eyebrow mono"><span>04</span> Method — from parcel to place</p>
+          <span class="atmosphere__rule" aria-hidden="true"></span>
+          <p class="mono">Fig. 04</p>
+        </div>
+
+        <h2 class="section-title" id="method-title" data-scan>
+          <span class="section-title__inner">
+            <span class="line">From parcel</span>
+            <span class="line">to <em>place</em>.</span>
+          </span>
+          <span class="scan" aria-hidden="true"></span>
+        </h2>
+
+        <ol class="method__steps" role="list">
+          <li class="method__step" data-reveal>
+            <span class="method__idx mono" aria-hidden="true">R.01</span>
+            <h3 class="method__name">Receive</h3>
+            <p class="method__text">
+              You bring a model, a set of drawings, or a paragraph about the project. Rough is
+              welcome — the argument matters more than the finish.
+            </p>
+          </li>
+          <li class="method__step" data-reveal style="--d: 90ms">
+            <span class="method__idx mono" aria-hidden="true">R.02</span>
+            <h3 class="method__name">Distil</h3>
+            <p class="method__text">
+              We read the building: centre, edges, spans, the hour of light it wants. You get the
+              reading back before anything is drawn.
+            </p>
+          </li>
+          <li class="method__step" data-reveal style="--d: 180ms">
+            <span class="method__idx mono" aria-hidden="true">R.03</span>
+            <h3 class="method__name">Stage</h3>
+            <p class="method__text">
+              Camera, weather and material are choreographed — the same care the five views of
+              this pavilion received.
+            </p>
+          </li>
+          <li class="method__step" data-reveal style="--d: 270ms">
+            <span class="method__idx mono" aria-hidden="true">R.04</span>
+            <h3 class="method__name">Deliver</h3>
+            <p class="method__text">
+              Stills, film or an interactive study, handed over with the working files and the
+              reasoning that made them.
+            </p>
+          </li>
+        </ol>
+
+        <p class="atmosphere__meta mono">
+          <span>Timelines and fees are quoted per study — nothing here is a promise</span>
+        </p>
+      </section>
+
+      <!-- ══════════════════════════════════════════════════════
+           SECTION 05 — Recognition
+           ══════════════════════════════════════════════════════ -->
+      <section class="recognition" id="press" aria-labelledby="press-title">
+        <div class="recognition__head">
+          <p class="section-eyebrow mono"><span>05</span> Recognition — where the work has been seen</p>
+          <span class="atmosphere__rule" aria-hidden="true"></span>
+          <p class="mono">Fig. 05</p>
+        </div>
+
+        <div class="recognition__grid">
+          <div class="recognition__copy">
+            <h2 class="section-title" id="press-title" data-scan>
+              <span class="section-title__inner">
+                <span class="line">An empty shelf,</span>
+                <span class="line">on <em>purpose</em>.</span>
+              </span>
+              <span class="scan" aria-hidden="true"></span>
+            </h2>
+            <p class="section-lede">
+              The studio is new, and nothing on this shelf is invented. When a study is
+              published, awarded or exhibited, it is recorded here — with the evidence, not
+              before.
+            </p>
+          </div>
+
+          <ul class="recognition__slots" role="list" aria-label="Recognition records">
+            <li class="rec-slot" data-reveal>
+              <span class="mono rec-slot__k">Award</span>
+              <span class="mono rec-slot__v">To be supplied</span>
+            </li>
+            <li class="rec-slot" data-reveal style="--d: 90ms">
+              <span class="mono rec-slot__k">Publication</span>
+              <span class="mono rec-slot__v">To be supplied</span>
+            </li>
+            <li class="rec-slot" data-reveal style="--d: 180ms">
+              <span class="mono rec-slot__k">Exhibition</span>
+              <span class="mono rec-slot__v">To be supplied</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="recognition__foot">
+          <p class="mono recognition__note">
+            <span class="recognition__note-k">Ledger</span>
+            Records are added only when verifiable — no client names, awards or press until they
+            exist.
+          </p>
+          <span class="recognition__rule" aria-hidden="true"></span>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════════════════
+           SECTION 06 — Questions
+           ══════════════════════════════════════════════════════ -->
+      <section class="faq" id="faq" aria-labelledby="faq-title">
+        <div class="faq__head">
+          <p class="section-eyebrow mono"><span>06</span> Questions — before saying hello</p>
+          <span class="atmosphere__rule" aria-hidden="true"></span>
+          <p class="mono">Fig. 06</p>
+        </div>
+
+        <div class="faq__grid">
+          <div class="faq__copy">
+            <h2 class="section-title section-title--sm" id="faq-title" data-scan>
+              <span class="section-title__inner">
+                <span class="line">Three honest</span>
+                <span class="line"><em>answers</em>.</span>
+              </span>
+              <span class="scan" aria-hidden="true"></span>
+            </h2>
+            <p class="section-lede">
+              If the question you have is not here, ask it directly — the enquiry sheet in the
+              footer is the way in.
+            </p>
+          </div>
+
+          <div class="faq__list">
+            <details class="faq__item" name="forma-faq">
+              <summary>
+                <span class="mono faq__idx">Q.01</span>
+                <span class="faq__q">What should we send to begin?</span>
+                <span class="faq__plus" aria-hidden="true">+</span>
+              </summary>
+              <div class="faq__a">
+                <p>
+                  Three things help: a model if one exists, drawings or screenshots if it does
+                  not, and a few written lines about what the project is for. We reply with a
+                  reading of the project before any fee is discussed.
+                </p>
+              </div>
+            </details>
+            <details class="faq__item" name="forma-faq">
+              <summary>
+                <span class="mono faq__idx">Q.02</span>
+                <span class="faq__q">Do you work from finished models only?</span>
+                <span class="faq__plus" aria-hidden="true">+</span>
+              </summary>
+              <div class="faq__a">
+                <p>
+                  No. Concept-stage work is often the most rewarding — the pavilion on this site
+                  began as a massing study. You can arrive with a sketch, a plan or only an
+                  argument, and the visual work will follow the argument.
+                </p>
+              </div>
+            </details>
+            <details class="faq__item" name="forma-faq">
+              <summary>
+                <span class="mono faq__idx">Q.03</span>
+                <span class="faq__q">How does a quote and a start date work?</span>
+                <span class="faq__plus" aria-hidden="true">+</span>
+              </summary>
+              <div class="faq__a">
+                <p>
+                  Each study is scoped individually — imagery, film and interactive work carry
+                  different weights. Begin the conversation through the enquiry sheet in the
+                  footer; contact details are being supplied for the build and will appear there
+                  once confirmed.
+                </p>
+              </div>
+            </details>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- ══════════════════════════════════════════════════════
+         FOOTER
+         ══════════════════════════════════════════════════════ -->
+    <footer class="site-footer" id="contact">
+      <span class="site-footer__rule" aria-hidden="true"></span>
+
+      <p class="footer-eyebrow mono">Enquiries — Forma Studio</p>
+      <h2 class="footer-title" data-scan>
+        <span class="footer-title__inner">
+          <span class="line">Let’s Shape</span>
+          <span class="line">Your <em>Next Vision</em>.</span>
+        </span>
+        <span class="scan" aria-hidden="true"></span>
+      </h2>
+      <p class="footer-lede">
+        Bring us a model, a set of drawings, or a paragraph about the project. We will tell you
+        what it wants to become — and how to make it visible.
+      </p>
+
+      <div class="footer-actions">
+        <button class="btn btn--primary" id="footer-contact" type="button">
+          <span>Begin a conversation</span>
+          <span class="btn__arrow" aria-hidden="true">↗</span>
+        </button>
+        <a class="btn btn--ghost" href="#top">
+          <span>Return to the pavilion</span>
+          <span class="btn__arrow" aria-hidden="true">↑</span>
+        </a>
+      </div>
+
+      <div class="site-footer__grid">
+        <div class="footer-col">
+          <h3 class="footer-col__h mono">Studio</h3>
+          <ul class="footer-contact" id="footer-contact-list"></ul>
+        </div>
+
+        <div class="footer-col">
+          <h3 class="footer-col__h mono">Sections</h3>
+          <ul class="footer-nav">
+            <li><a href="#top" data-nav>Pavilion — five views</a></li>
+            <li><a href="#atmosphere" data-nav>01 — From structure to atmosphere</a></li>
+            <li><a href="#design" data-nav>02 — Inside the design</a></li>
+            <li><a href="#services" data-nav>03 — Services</a></li>
+            <li><a href="#process" data-nav>04 — Method</a></li>
+            <li><a href="#press" data-nav>05 — Recognition</a></li>
+            <li><a href="#faq" data-nav>06 — Questions</a></li>
+            <li><a href="#contact" data-nav>Enquiries</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h3 class="footer-col__h mono">Sound</h3>
+          <p class="footer-sound-note">
+            Winter ambience, water and the soft cue of the camera. Off until you ask for it.
+          </p>
+          <button class="sound-toggle footer-sound" id="footer-sound" type="button" aria-pressed="false" aria-label="Enable ambient sound">
+            <span class="sound-toggle__bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+            <span class="sound-toggle__text mono" data-sound-label>Enable sound</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="site-footer__base">
+        <a class="wordmark" href="#top" aria-label="Forma Studio, back to top">
+          <svg class="wordmark__mark" viewBox="0 0 34 34" aria-hidden="true">
+            <path d="M5 29V5h24" />
+            <path d="M5 29 29 5" />
+            <path d="M5 17h17v12" />
+            <circle cx="24.5" cy="9.5" r="1.8" />
+          </svg>
+          <span class="wordmark__type">
+            <span class="wordmark__name">Forma</span>
+            <span class="wordmark__sub">Studio</span>
+          </span>
+        </a>
+        <p class="mono footer-base__mid">Pavilion study · Winter 2026</p>
+        <p class="mono">© <span id="year">2026</span> Forma Studio</p>
+        <button class="mono footer-top" id="back-to-top" type="button">
+          Back to top <span aria-hidden="true">↑</span>
+        </button>
+      </div>
+    </footer>
+
+    <!-- ── enquiry sheet ─────────────────────────────────────── -->
+    <div class="contact-sheet" id="contact-sheet" hidden role="dialog" aria-modal="true" aria-labelledby="contact-sheet-title">
+      <div class="contact-sheet__scrim" data-close></div>
+      <div class="contact-sheet__panel">
+        <button class="contact-sheet__close" type="button" data-close aria-label="Close enquiry sheet">✕</button>
+        <p class="contact-sheet__eyebrow mono">Enquiries</p>
+        <h3 id="contact-sheet-title">Begin a conversation.</h3>
+        <div id="contact-sheet-body"></div>
+      </div>
+    </div>
+  </body>
+</html>

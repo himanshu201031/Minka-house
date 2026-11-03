@@ -1,0 +1,10 @@
+﻿import { chromium } from 'playwright-core';
+const browser = await chromium.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: true, args: ['--enable-unsafe-swiftshader','--use-gl=angle','--use-angle=swiftshader'] });
+const page = await browser.newPage({ viewport: { width: 1280, height: 800 } });
+page.on('console', m => console.log(m.type(), m.text()));
+page.on('pageerror', e => console.log('PAGEERROR', e.message));
+await page.goto('http://localhost:5174', { waitUntil: 'domcontentloaded' });
+await page.waitForTimeout(6000);
+console.log('forma?', await page.evaluate(() => !!window.__forma));
+console.log('body', await page.evaluate(() => document.body.className));
+await browser.close();

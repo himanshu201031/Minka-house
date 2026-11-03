@@ -1,0 +1,203 @@
+/* ─────────────────────────────────────────────────────────────
+   Forma Studio — design tokens
+
+   Two presentation modes, one set of role names:
+
+   · (default) "glacier paper" — winter daylight, white ground, ink text,
+     a deeper glacier-teal accent for contrast on paper.
+   · [data-theme="dark"] "winter nocturne" — the original midnight scheme.
+
+   Role names describe purpose (ground, text, accent, line), not the
+   literal colour of any mode: --ink is the page ground, --paper the
+   readable text, --ice the accent, in either mode.
+   ───────────────────────────────────────────────────────────── */
+:root {
+  /* ground */
+  --ink: #f2f4f8;
+  --ink-deep: #e8ecf1;
+  --midnight: #ffffff;
+  --slate-900: #f7f9fb;
+  --slate-800: #eef1f5;
+  --slate-700: #e0e5ec;
+  --slate-600: #cfd7e0;
+  --slate-500: #a9b4c1;
+
+  /* text */
+  --paper: #14202e;
+  --paper-dim: #34424f;
+  --slate-text: #4d5b6a;
+  --slate-text-dim: #64727f;
+
+  /* accents */
+  --ice: #0e7ca6;
+  --ice-bright: #085a7a;
+  --ice-dim: #3d95b5;
+  --ice-glow: rgba(14, 124, 166, 0.32);
+  --vermilion: #bd4e26;
+  --vermilion-warm: #d3642f;
+  --ochre: #a27a2f;
+
+  /* lines */
+  --hair: rgba(20, 32, 46, 0.13);
+  --hair-strong: rgba(20, 32, 46, 0.26);
+  --hair-ice: rgba(14, 124, 166, 0.38);
+
+  /* hover / selection washes */
+  --hover-wash: rgba(14, 124, 166, 0.06);
+
+  /* composites — whole surfaces that swap with the theme */
+  --hero-veil:
+    linear-gradient(
+      to top,
+      rgba(224, 231, 239, 0.92) 0%,
+      rgba(224, 231, 239, 0.44) 16%,
+      rgba(224, 231, 239, 0.05) 38%,
+      transparent 54%
+    ),
+    linear-gradient(to right, rgba(213, 222, 232, 0.75) 0%, rgba(213, 222, 232, 0.35) 28%, transparent 48%),
+    radial-gradient(120% 90% at 50% 46%, transparent 55%, rgba(190, 203, 216, 0.5) 100%);
+  --header-card: linear-gradient(180deg, rgba(249, 251, 253, 0.82), rgba(249, 251, 253, 0.40));
+  --views-veil: radial-gradient(120% 100% at 100% 0%, rgba(250, 252, 254, 0.72), rgba(250, 252, 254, 0) 72%);
+  --menu-bg: rgba(241, 245, 249, 0.88);
+  --scrim: rgba(236, 241, 246, 0.9);
+  --panel-grad: linear-gradient(160deg, #ffffff, #f1f4f8);
+  --panel-shadow: 0 40px 100px rgba(41, 63, 84, 0.32);
+  --wash-atmosphere:
+    radial-gradient(120% 70% at 12% 0%, rgba(148, 176, 205, 0.28), transparent 60%),
+    linear-gradient(180deg, var(--ink) 0%, var(--ink-deep) 100%);
+  --wash-design:
+    radial-gradient(90% 60% at 78% 20%, rgba(148, 176, 205, 0.26), transparent 62%),
+    var(--ink-deep);
+  --footer-grad:
+    radial-gradient(80% 60% at 50% 0%, rgba(148, 176, 205, 0.32), transparent 60%),
+    linear-gradient(180deg, var(--ink) 0%, var(--ink-deep) 34%, #dfe5ec 100%);
+
+  /* headline scan texture — a dark shimmer on paper */
+  --scan-clone-image:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(10, 90, 122, 0.55) 0 1px,
+      rgba(14, 124, 166, 0) 1px 4px
+    ),
+    linear-gradient(
+      100deg,
+      rgba(14, 124, 166, 0) 0%,
+      rgba(14, 124, 166, 0.14) 40%,
+      #7fd2ee 50%,
+      rgba(14, 124, 166, 0.14) 60%,
+      rgba(14, 124, 166, 0) 100%
+    );
+  --scan-stroke: rgba(10, 90, 122, 0.6);
+  --scan-glow: rgba(14, 124, 166, 0.35);
+
+  /* the two drawing plates (elevation / plan) stay mounted dark in both
+     themes — the page changes around the drawings, not under them */
+  --plate-grad: linear-gradient(180deg, rgba(16, 27, 44, 0.6), rgba(7, 12, 21, 0.86));
+  --plate-accent: #9ce8ff;
+  --plate-accent-dim: #5cb8d6;
+  --plate-ink: rgba(196, 222, 244, 0.5);
+
+  /* fixed tooltip chip — stays dark for contrast on any ground */
+  --tooltip-bg: rgba(8, 14, 24, 0.86);
+  --tooltip-ink: #d8f6ff;
+
+  /* type */
+  --font-display: "Fraunces", "Iowan Old Style", "Palatino Linotype", Palatino,
+    "Times New Roman", serif;
+  --font-ui: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial,
+    sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  /* metrics */
+  --gutter: clamp(20px, 3.6vw, 62px);
+  --header-h: 92px;
+  --ease-out: cubic-bezier(0.16, 0.84, 0.28, 1);
+  --ease-in-out: cubic-bezier(0.62, 0.02, 0.22, 1);
+  --ease-soft: cubic-bezier(0.33, 1, 0.68, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* motion */
+  --dur-copy: 340ms;
+  --dur-stage: 1400ms;
+}
+
+/* ── winter nocturne — the dark presentation ───────────────── */
+html[data-theme="dark"] {
+  --ink: #060b14;
+  --ink-deep: #040810;
+  --midnight: #0a1322;
+  --slate-900: #0d1727;
+  --slate-800: #122033;
+  --slate-700: #1b2a42;
+  --slate-600: #24374f;
+  --slate-500: #354b66;
+
+  --paper: #eef4f9;
+  --paper-dim: #c3d2e0;
+  --slate-text: #8ea3ba;
+  --slate-text-dim: #6b819a;
+
+  --ice: #9ce8ff;
+  --ice-bright: #d8f6ff;
+  --ice-dim: #5cb8d6;
+  --ice-glow: rgba(156, 232, 255, 0.5);
+  --vermilion: #d4572d;
+  --vermilion-warm: #f08a52;
+  --ochre: #c99a4e;
+
+  --hair: rgba(196, 222, 244, 0.13);
+  --hair-strong: rgba(196, 222, 244, 0.26);
+  --hair-ice: rgba(156, 232, 255, 0.32);
+
+  --hover-wash: rgba(156, 232, 255, 0.05);
+
+  --hero-veil:
+    linear-gradient(
+      to top,
+      rgba(6, 11, 20, 0.9) 0%,
+      rgba(6, 11, 20, 0.45) 16%,
+      rgba(6, 11, 20, 0.06) 38%,
+      transparent 54%
+    ),
+    linear-gradient(to right, rgba(5, 10, 19, 0.8) 0%, rgba(5, 10, 19, 0.4) 28%, transparent 48%),
+    radial-gradient(120% 90% at 50% 46%, transparent 52%, rgba(4, 8, 16, 0.55) 100%);
+  --header-card: linear-gradient(180deg, rgba(6, 11, 20, 0.72), rgba(6, 11, 20, 0.32));
+  --views-veil: radial-gradient(120% 100% at 100% 0%, rgba(9, 18, 31, 0.42), transparent 72%);
+  --menu-bg: rgba(4, 9, 16, 0.9);
+  --scrim: rgba(3, 7, 13, 0.82);
+  --panel-grad: linear-gradient(160deg, #0b1625, #060c16);
+  --panel-shadow: 0 40px 100px rgba(0, 0, 0, 0.65);
+  --wash-atmosphere:
+    radial-gradient(120% 70% at 12% 0%, rgba(27, 42, 66, 0.42), transparent 60%),
+    linear-gradient(180deg, var(--ink) 0%, var(--ink-deep) 100%);
+  --wash-design:
+    radial-gradient(90% 60% at 78% 20%, rgba(27, 42, 66, 0.4), transparent 62%),
+    var(--ink-deep);
+  --footer-grad:
+    radial-gradient(80% 60% at 50% 0%, rgba(27, 42, 66, 0.5), transparent 60%),
+    linear-gradient(180deg, var(--ink-deep), #03070d);
+
+  --scan-clone-image:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(216, 246, 255, 0.55) 0 1px,
+      rgba(156, 232, 255, 0) 1px 4px
+    ),
+    linear-gradient(
+      100deg,
+      rgba(156, 232, 255, 0) 0%,
+      rgba(156, 232, 255, 0.15) 40%,
+      #eafaff 50%,
+      rgba(156, 232, 255, 0.15) 60%,
+      rgba(156, 232, 255, 0) 100%
+    );
+  --scan-stroke: rgba(200, 245, 255, 0.55);
+  --scan-glow: rgba(156, 232, 255, 0.42);
+}
+
+@media (max-width: 900px) {
+  :root {
+    --header-h: 74px;
+    --gutter: clamp(16px, 5vw, 28px);
+  }
+}

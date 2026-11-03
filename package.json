@@ -1,0 +1,19 @@
+{
+  "name": "forma-studio",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Forma Studio — winter pavilion, an interactive architectural study.",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "three": "^0.169.0"
+  },
+  "devDependencies": {
+    "playwright-core": "^1.49.1",
+    "vite": "^5.4.10"
+  }
+}

@@ -1,0 +1,40 @@
+﻿import { chromium } from 'playwright-core';
+import path from 'node:path';
+const width = Number(process.argv[2] || 390);
+const height = Number(process.argv[3] || 844);
+const tag = process.argv[4] || 'm';
+const scrolls = (process.argv[5] || '').split(',').filter(Boolean).map(Number);
+const touch = process.argv[6] !== 'desktop';
+const browser = await chromium.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: true, args: ['--enable-unsafe-swiftshader','--use-gl=angle','--use-angle=swiftshader','--disable-lcd-text','--force-device-scale-factor=1'] });
+const ctx = await browser.newContext({ viewport: { width, height }, deviceScaleFactor: 1, isMobile: touch, hasTouch: touch });
+const page = await ctx.newPage();
+const logs = [];
+page.on('console', m => { if (m.type() === 'error' || m.type() === 'warning') logs.push(`${m.type()}: ${m.text()}`); });
+page.on('pageerror', e => logs.push(`pageerror: ${e.message}`));
+await page.goto('http://localhost:5174', { waitUntil: 'domcontentloaded', timeout: 60000 });
+await page.waitForFunction(() => !!window.__forma, null, { timeout: 45000 });
+await page.waitForFunction(() => !document.body.classList.contains('is-loading'), null, { timeout: 45000 });
+await page.evaluate(() => window.__forma.world.setQuality('high'));
+await page.waitForTimeout(1500);
+const map = await page.evaluate(() => {
+  const out = {};
+  document.querySelectorAll('section, footer').forEach(e => { const r = e.getBoundingClientRect(); out[e.id || e.className] = { top: Math.round(r.top + scrollY), h: Math.round(r.height) }; });
+  out.doc = document.documentElement.scrollHeight;
+  out.docW = document.documentElement.scrollWidth;
+  out.vw = innerWidth;
+  return out;
+});
+console.log('MAP', JSON.stringify(map));
+const shots = scrolls.length ? scrolls : [0];
+for (const y of shots) {
+  await page.evaluate(v => scrollTo(0, v), y);
+  await page.waitForTimeout(900);
+  await page.evaluate(() => window.__forma.world.setQuality('low'));
+  await page.evaluate(() => document.getAnimations().forEach(a => { try { if (a.effect?.getComputedTiming?.().iterations !== Infinity) a.finish(); } catch {} }));
+  await page.waitForTimeout(150);
+  const info = await page.evaluate(() => ({ y: Math.round(scrollY), views: (() => { const v = document.querySelector('.views'); const r = v.getBoundingClientRect(); const cs = getComputedStyle(v); return { x: Math.round(r.x), y: Math.round(r.y), w: Math.round(r.width), h: Math.round(r.height), display: cs.display, opacity: cs.opacity }; })(), copy: (() => { const c = document.querySelector('.stage-copy').getBoundingClientRect(); return { x: Math.round(c.x), y: Math.round(c.y), w: Math.round(c.width), h: Math.round(c.height), bottom: Math.round(c.bottom) }; })(), docW: document.documentElement.scrollWidth, vw: innerWidth }));
+  console.log('SHOT', JSON.stringify(info));
+  await page.screenshot({ path: path.join('C:/Users/himan/AppData/Local/Temp/opencode', `mob-${tag}-${y}.png`), timeout: 180000, animations: 'disabled' });
+}
+console.log('LOGS', JSON.stringify(logs));
+await browser.close();

@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.freebuff/
+3d model.glb
+.DS_Store
+.env
+.env.*
+*.log
+scripts/*.png
