@@ -119,6 +119,39 @@ function deriveTextures(sourceImg, renderer) {
 }
 
 /**
+ * Daylight variant of the bake for light mode: pull the vermilion lacquer
+ * 62% toward luminance (weathered silvered timber), lift the shadows and
+ * cool the highlights under the glacier sky. Swapped in by Pavilion.setTheme.
+ */
+function deriveDaylightMap(sourceImg, renderer) {
+  const w = Math.min(1024, sourceImg.width || 1024);
+  const h = Math.min(1024, sourceImg.height || 1024);
+  const c = ctxCreate(w, h);
+  const ctx = c.getContext('2d', { willReadFrequently: true });
+  ctx.drawImage(sourceImg, 0, 0, w, h);
+  const img = ctx.getImageData(0, 0, w, h);
+  const s = img.data;
+
+  for (let i = 0; i < s.length; i += 4) {
+    const r = s[i];
+    const g = s[i + 1];
+    const b = s[i + 2];
+    const lum = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+    // desaturate toward luminance, then lift and cool
+    s[i] = Math.min(255, (lum * 0.52 + r * 0.48) * 1.07 + 9);
+    s[i + 1] = Math.min(255, (lum * 0.52 + g * 0.48) * 1.09 + 10);
+    s[i + 2] = Math.min(255, (lum * 0.52 + b * 0.48) * 1.14 + 13);
+  }
+  ctx.putImageData(img, 0, 0);
+
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  t.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  return t;
+}
+
+/**
  * Packed surface response (G = roughness, B = metalness) derived from the
  * bake: vermilion timber and gold leaf read as lacquer — smooth, faintly
  * metallic — while snow caps, walls and stone stay matte. One texture serves
@@ -263,6 +296,9 @@ export class Pavilion {
         const derived = deriveTextures(img, this.renderer);
         map = derived.map;
         emissiveMap = derived.emissiveMap;
+        // daylight bake for the light presentation
+        this._nightMap = map;
+        this._dayMap = deriveDaylightMap(img, this.renderer);
         // derive a subtle normal map from texture luminance variation
         normalMap = deriveNormalMap(img, this.renderer);
         // per-pixel roughness/metalness so paint reads as lacquer
@@ -319,20 +355,22 @@ export class Pavilion {
   setTheme(mode) {
     this.themeMode = mode === 'light' ? 'light' : 'dark';
     const light = this.themeMode === 'light';
-    this._emissiveBase = this.material?.emissiveMap ? (light ? 0.42 : 1.02) : 0;
+    this._emissiveBase = this.material?.emissiveMap ? (light ? 0.3 : 1.02) : 0;
     if (this.material) {
       const m = this.material;
       if (light) {
-        // >1 tints lift the baked texture toward a sun-bleached plum
-        m.color.setRGB(1.16, 1.19, 1.22);
-        m.clearcoat = 0.42;
-        m.clearcoatRoughness = 0.52;
-        m.envMapIntensity = 1.38;
-        m.specularIntensity = 0.68;
-        m.sheen = 0.2;
-        m.sheenColor.set(0xdfeaf4);
-        m.sheenRoughness = 0.78;
+        if (this._dayMap) m.map = this._dayMap;
+        // small cool lift on top of the daylight bake
+        m.color.setRGB(1.03, 1.06, 1.1);
+        m.clearcoat = 0.34;
+        m.clearcoatRoughness = 0.6;
+        m.envMapIntensity = 1.32;
+        m.specularIntensity = 0.6;
+        m.sheen = 0.16;
+        m.sheenColor.set(0xe3edf6);
+        m.sheenRoughness = 0.8;
       } else {
+        if (this._nightMap) m.map = this._nightMap;
         m.color.setRGB(1, 1, 1);
         m.clearcoat = 0.7;
         m.clearcoatRoughness = 0.34;

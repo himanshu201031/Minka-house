@@ -803,7 +803,7 @@
 .faq {
   position: relative;
   background: var(--ink);
-  padding: clamp(90px, 13vh, 150px) var(--gutter);
+  padding: clamp(76px, 10.5vh, 122px) var(--gutter);
 }
 
 /* a daylight gradient through the rhythm of the page */
@@ -911,6 +911,10 @@
 
 .offers__cta:hover .offers__cta-arrow {
   transform: translate(2px, -2px);
+}
+
+.offers .atmosphere__meta {
+  margin-top: 22px;
 }
 
 .service__pack {
@@ -1082,6 +1086,7 @@
   display: flex;
   align-items: baseline;
   gap: 16px;
+  flex: 0 1 620px;
   max-width: 62ch;
   color: var(--slate-text-dim);
   font-size: 9.5px;
